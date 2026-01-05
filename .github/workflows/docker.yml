@@ -1,0 +1,66 @@
+name: Docker Build and Test
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build backend image
+      uses: docker/build-push-action@v5
+      with:
+        context: ./backend
+        file: ./backend/Dockerfile
+        push: false
+        tags: collect-anything-backend:test
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+    - name: Build frontend image
+      uses: docker/build-push-action@v5
+      with:
+        context: ./frontend
+        file: ./frontend/Dockerfile
+        push: false
+        tags: collect-anything-frontend:test
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+    - name: Start services
+      run: |
+        docker-compose up -d
+        sleep 10
+
+    - name: Check service health
+      run: |
+        docker-compose ps
+        # Check backend health
+        curl --fail http://localhost:8000/ || exit 1
+        # Check frontend health
+        curl --fail http://localhost:3000/ || exit 1
+
+    - name: Run backend tests
+      run: |
+        docker-compose exec -T backend uv run pytest || true
+
+    - name: Show logs on failure
+      if: failure()
+      run: |
+        docker-compose logs backend
+        docker-compose logs frontend
+        docker-compose logs db
+
+    - name: Stop services
+      if: always()
+      run: docker-compose down -v

@@ -1,0 +1,42 @@
+# docker-compose.override.yml
+# 
+# This file is automatically loaded by docker-compose and can be used
+# to override settings from docker-compose.yml for local development.
+# 
+# Copy this file to docker-compose.override.yml and customize as needed.
+# This file should be added to .gitignore to keep local settings private.
+#
+# Example use cases:
+# - Change port mappings to avoid conflicts
+# - Mount additional volumes
+# - Add environment variables
+# - Override command for debugging
+
+version: '3.8'
+
+services:
+  # Example: Change backend port
+  # backend:
+  #   ports:
+  #     - "8001:8000"
+  
+  # Example: Change frontend port
+  # frontend:
+  #   ports:
+  #     - "3001:3000"
+  
+  # Example: Add debugging to backend
+  # backend:
+  #   environment:
+  #     - DEBUG=1
+  #     - LOG_LEVEL=DEBUG
+  
+  # Example: Use external database
+  # backend:
+  #   environment:
+  #     - DATABASE_URL=postgresql+psycopg://user:pass@external-host:5432/dbname
+  
+  # Example: Mount additional volumes
+  # backend:
+  #   volumes:
+  #     - ./my-custom-config:/app/config
