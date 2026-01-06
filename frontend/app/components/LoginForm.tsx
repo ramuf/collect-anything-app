@@ -2,6 +2,7 @@
 import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Eye, EyeOff, Mail, Lock } from 'lucide-react'
+import { getApiUrl } from '@/lib/config'
 
   const inputBase = 'w-full rounded-md border pl-10 pr-3 py-3 bg-[rgba(255,255,255,0.03)] text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:ring-2 focus:ring-blue-500 border-[rgba(255,255,255,0.06)]'
 
@@ -34,8 +35,8 @@ export default function LoginForm() {
 
     setLoading(true)
     try {
-      const base = (process.env.NEXT_PUBLIC_API_URL as string) || 'http://127.0.0.1:8000'
-      const res = await fetch(`${base}/auth/login`, {
+      const apiUrl = getApiUrl()
+      const res = await fetch(`${apiUrl}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: email.trim(), password }),

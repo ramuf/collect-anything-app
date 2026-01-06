@@ -5,6 +5,7 @@ import Link from "next/link";
 import HeaderRenderer from './components/HeaderRenderer';
 import { ToastProvider } from '@/components/ui/toast';
 import ConfirmProvider from '@/components/ui/confirm';
+import Script from 'next/script';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,6 +29,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <Script src="/runtime-config.js" strategy="beforeInteractive" />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         style={{ ['--header-height']: '64px' } as any}

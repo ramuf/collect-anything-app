@@ -1,6 +1,7 @@
 "use client"
 import React, { useEffect, useRef, useState } from 'react'
 import { Eye, EyeOff, User, Mail, Lock } from 'lucide-react'
+import { getApiUrl } from '@/lib/config'
 
   const inputBase = 'w-full rounded-md border pl-10 pr-3 py-3 bg-[rgba(255,255,255,0.03)] text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:ring-2 focus:ring-blue-500 border-[rgba(255,255,255,0.06)]'
 
@@ -66,8 +67,8 @@ export default function SignupForm() {
 
     setLoading(true)
     try {
-      const base = (process.env.NEXT_PUBLIC_API_URL as string) || 'http://127.0.0.1:8000'
-      const res = await fetch(`${base}/auth/signup`, {
+      const apiUrl = getApiUrl()
+      const res = await fetch(`${apiUrl}/auth/signup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: name.trim(), email: email.trim(), password }),

@@ -1,0 +1,54 @@
+
+services:
+  frontend:
+    image: ramuf/collect-anything-app-frontend:latest
+    ports:
+      - "3000:3000"
+    depends_on:
+      backend:
+        condition: service_healthy
+    environment:
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+    restart: unless-stopped
+
+  backend:
+    image: ramuf/collect-anything-app-backend:latest
+    ports:
+      - "8000:8000"
+    env_file: .env      
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      SECRET_KEY: ${SECRET_KEY}
+      CORS_ORIGINS: ${CORS_ORIGINS}
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - backend_uploads:/app/uploads        
+    healthcheck:
+      test: ["CMD", "python", "healthcheck.py"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: collectapp
+      POSTGRES_PASSWORD: collectapp_dev_password
+      POSTGRES_DB: collectapp
+    volumes:
+      - db-data:/var/lib/postgresql/data      
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U collectapp"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  db-data:
+  backend_uploads:

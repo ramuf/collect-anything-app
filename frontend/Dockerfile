@@ -15,6 +15,10 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
+# Accept build argument for API URL
+ARG NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+
 # Set environment variable to production
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
@@ -37,6 +41,13 @@ COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
+# Copy entrypoint script
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
+
+# Make public directory writable for runtime config
+RUN chown -R nextjs:nodejs /app/public
+
 USER nextjs
 
 EXPOSE 3000
@@ -44,5 +55,5 @@ EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-# Run the Next.js server
-CMD ["node", "server.js"]
+# Use entrypoint script to configure at runtime
+ENTRYPOINT ["/docker-entrypoint.sh"]
