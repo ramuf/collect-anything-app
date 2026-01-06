@@ -66,11 +66,35 @@ export default function LoginForm() {
             // ignore storage errors
           }
         }
-        // server sets HttpOnly cookie; no client-side persistence needed
+        // server sets HttpOnly cookie; confirm session before redirect to avoid race
+        async function confirmAndRedirect() {
+          const maxAttempts = 3
+          const delay = (ms: number) => new Promise((r) => setTimeout(r, ms))
+          for (let i = 0; i < maxAttempts; i++) {
+            try {
+              const meRes = await fetch(`${apiUrl}/auth/me`, { credentials: 'include', cache: 'no-store' })
+              if (meRes.ok) {
+                router.push('/dashboard')
+                return
+              }
+            } catch (e) {
+              // ignore network errors and retry
+            }
+            // small backoff
+            await delay(200 * (i + 1))
+          }
+          // final attempt: navigate anyway (dashboard will redirect back if unauthenticated)
+          try {
+            router.push('/dashboard')
+          } catch (e) {
+            // ignore push errors in client
+          }
+        }
+
         try {
-          router.push('/dashboard')
+          await confirmAndRedirect()
         } catch (e) {
-          // ignore push errors in client
+          // ignore
         }
       }
     } catch (err) {

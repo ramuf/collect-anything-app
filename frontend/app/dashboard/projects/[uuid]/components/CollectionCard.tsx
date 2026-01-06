@@ -13,6 +13,7 @@ interface CollectionCardProps {
   createdAt: string;
   projectId: string;
   onDelete: () => void;
+  onUpdate?: () => void;
 }
 
 export default function CollectionCard({
@@ -22,6 +23,7 @@ export default function CollectionCard({
   createdAt,
   projectId,
   onDelete,
+  onUpdate,
 }: CollectionCardProps) {
   const [showMenu, setShowMenu] = useState(false);
   const [count, setCount] = useState<number | null>(null);
@@ -72,7 +74,7 @@ export default function CollectionCard({
         accent.ring
       )}
     >
-      <CollectionCardHeader id={id} title={title} slug={slug} projectId={projectId} onDelete={onDelete} />
+      <CollectionCardHeader id={id} title={title} slug={slug} projectId={projectId} onDelete={onDelete} onUpdate={onUpdate} />
       <CollectionCardStats count={count} createdAt={createdAt} />
       <CollectionCardActions id={id} projectId={projectId} onSubmitted={handleNewSubmission} />
     </div>

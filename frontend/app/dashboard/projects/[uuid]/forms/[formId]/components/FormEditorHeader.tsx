@@ -5,6 +5,7 @@ import {
   ArrowLeft, Eye, Save
 } from 'lucide-react'
 import Link from 'next/link'
+import FormEditDialog from './FormEditDialog'
 
 interface Form {
   id: string
@@ -47,9 +48,10 @@ interface FormEditorHeaderProps {
   saving: boolean
   saveForm: () => void
   projectId: string
+  updateFormMeta?: (updates: Partial<Form>) => void
 }
 
-export default function FormEditorHeader({ form, saving, saveForm, projectId }: FormEditorHeaderProps) {
+export default function FormEditorHeader({ form, saving, saveForm, projectId, updateFormMeta }: FormEditorHeaderProps) {
   if (!form) return null
 
   return (
@@ -59,7 +61,21 @@ export default function FormEditorHeader({ form, saving, saveForm, projectId }: 
           <ArrowLeft size={20} />
         </Link>
         <div>
-          <h1 className="text-lg font-semibold text-[var(--foreground)]">{form.title}</h1>
+          <div className="flex items-center gap-3">
+            <h1 className="text-lg font-semibold text-[var(--foreground)]">{form.title}</h1>
+            <FormEditDialog
+              initial={{ title: form.title, slug: form.slug, description: form.settings?.description }}
+              onSave={(data: any) => {
+                if (typeof updateFormMeta === 'function') {
+                  const newSettings = { ...(form.settings || {}), description: data.description }
+                  updateFormMeta({ title: data.title || form.title, slug: data.slug || form.slug, settings: newSettings })
+                  // Persist immediately
+                  try { saveForm() } catch (e) { console.error('Failed to save form from dialog', e) }
+                }
+              }}
+              trigger={<button className="text-sm text-[var(--muted-foreground)] hover:text-[var(--foreground)]">Edit</button>}
+            />
+          </div>
           <p className="text-xs text-[var(--muted-foreground)] font-mono">/{form.slug}</p>
         </div>
       </div>

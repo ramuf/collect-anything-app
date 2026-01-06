@@ -65,6 +65,7 @@ class Form(SQLModel, table=True):
     id: Optional[UUID] = Field(default_factory=uuid4, sa_column=uuid_pk_column())
     project_id: UUID = Field(sa_column=uuid_fk_column("project.id"))
     title: str
+    description: Optional[str] = None
     slug: str
     schema_: List[Dict[str, Any]] = Field(default_factory=list, sa_column=json_column(list))
     settings: Dict[str, Any] = Field(default_factory=dict, sa_column=json_column(dict))

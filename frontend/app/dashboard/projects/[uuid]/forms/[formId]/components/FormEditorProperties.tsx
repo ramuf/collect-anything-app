@@ -14,6 +14,26 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { ScrollArea } from '@/components/ui/scroll-area'
 
+const TYPE_LABELS: Record<string, string> = {
+  text: 'Short Text',
+  textarea: 'Long Text',
+  number: 'Number',
+  currency: 'Currency',
+  date: 'Date',
+  time: 'Time',
+  rating: 'Rating',
+  slider: 'Slider',
+  select: 'Dropdown',
+  multiselect: 'Multi-Select',
+  radio: 'Single Choice',
+  checkbox: 'Multiple Choice',
+  toggle: 'Switch',
+  file: 'File',
+  reference: 'Reference',
+  calculated: 'Calculated',
+  conditional: 'Conditional',
+  section: 'Section',
+}
 interface Form {
   id: string
   title: string
@@ -95,7 +115,10 @@ export default function FormEditorProperties({
         <div className="p-6">
           <div className="space-y-6 animate-in slide-in-from-right-4 duration-200">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-semibold text-[var(--foreground)]">Field Properties</h3>
+              <div className="flex items-baseline gap-2">
+                <h3 className="text-sm font-semibold text-[var(--foreground)]">Field Properties</h3>
+                <span className="text-xs px-2 py-0.5 rounded-full bg-[var(--muted)] text-[var(--muted-foreground)]">{TYPE_LABELS[selectedField.type] ?? selectedField.type}</span>
+              </div>
               <button onClick={() => deleteField(selectedField.id)} className="text-[var(--destructive)] hover:opacity-80 text-xs">Delete</button>
             </div>
 

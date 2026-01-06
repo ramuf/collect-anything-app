@@ -256,6 +256,15 @@ def create_form(project_id: UUID, form: Form, session: Session = Depends(get_ses
         raise HTTPException(status_code=403, detail="Not authorized")
 
     form.project_id = project_id
+    # Sanitize/validate description if provided
+    if getattr(form, "description", None) is not None:
+        try:
+            desc = str(form.description).strip()
+        except Exception:
+            desc = None
+        if desc is not None and len(desc) > 1000:
+            raise HTTPException(status_code=400, detail="Description is too long (max 1000 characters)")
+        form.description = desc
     session.add(form)
     session.commit()
     session.refresh(form)
@@ -294,6 +303,7 @@ def update_form(form_id: UUID, data: Form, session: Session = Depends(get_sessio
     
     form.title = data.title
     form.slug = data.slug
+    form.description = data.description
     form.schema_ = data.schema_
     form.settings = data.settings
     

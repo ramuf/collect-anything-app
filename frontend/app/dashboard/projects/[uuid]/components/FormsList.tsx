@@ -30,6 +30,7 @@ export default function FormsList({ projectId }: { projectId: string }) {
   const [open, setOpen] = useState(false)
   const [newFormTitle, setNewFormTitle] = useState('')
   const [newFormSlug, setNewFormSlug] = useState('')
+  const [newFormDescription, setNewFormDescription] = useState('')
   const confirm = useConfirm()
 
   useEffect(() => {
@@ -63,6 +64,7 @@ export default function FormsList({ projectId }: { projectId: string }) {
         body: JSON.stringify({
           title: newFormTitle,
           slug: newFormSlug || newFormTitle.toLowerCase().replace(/\s+/g, '-'),
+          description: newFormDescription,
           project_id: projectId,
           schema_: [],
           settings: {}
@@ -72,6 +74,7 @@ export default function FormsList({ projectId }: { projectId: string }) {
       if (res.ok) {
         setNewFormTitle('')
         setNewFormSlug('')
+        setNewFormDescription('')
         setOpen(false)
         fetchForms()
       }
@@ -145,6 +148,15 @@ export default function FormsList({ projectId }: { projectId: string }) {
                   placeholder="e.g. customer-feedback"
                 />
               </div>
+              <div>
+                <label className="block text-sm font-medium mb-1 text-[var(--muted-foreground)]">Description (optional)</label>
+                <textarea
+                  value={newFormDescription}
+                  onChange={(e) => setNewFormDescription(e.target.value)}
+                  className="w-full p-2 rounded-md border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] focus:ring-2 focus:ring-[var(--primary)] outline-none transition-all"
+                  placeholder="Short description of the collection"
+                />
+              </div>
 
               <DialogFooter>
                 <button
@@ -197,6 +209,7 @@ export default function FormsList({ projectId }: { projectId: string }) {
               createdAt={form.created_at}
               projectId={projectId}
               onDelete={() => handleDeleteForm(form.id)}
+              onUpdate={() => fetchForms()}
             />
           ))}
         </div>

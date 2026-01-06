@@ -180,6 +180,11 @@ export default function FormEditor({ projectId, formId }: { projectId: string, f
     }
   }
 
+  const updateFormMeta = (updates: Partial<Form>) => {
+    if (!form) return
+    setForm({ ...form, ...updates })
+  }
+
   const addField = (type: string) => {
     if (!form) return
     const label = type === 'section' ? 'New Section' : 'New Field'
@@ -243,6 +248,7 @@ export default function FormEditor({ projectId, formId }: { projectId: string, f
         form={form}
         saving={saving}
         saveForm={saveForm}
+        updateFormMeta={updateFormMeta}
         projectId={projectId}
       />
 
